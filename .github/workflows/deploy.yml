@@ -1,0 +1,33 @@
+name: Deploy to Google App Engine
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    name: GAE Deploy
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout source code
+      uses: actions/checkout@v3
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+
+    - name: Authenticate to Google Cloud
+      uses: google-github-actions/auth@v1
+      with:
+        credentials_json: '${{ secrets.GCP_SA_KEY }}'
+
+    - name: Set up gcloud SDK
+      uses: google-github-actions/setup-gcloud@v1
+      with:
+        project_id: '${{ secrets.GCP_PROJECT_ID }}'
+
+    - name: Deploy to App Engine
+      run: gcloud app deploy --quiet
+
